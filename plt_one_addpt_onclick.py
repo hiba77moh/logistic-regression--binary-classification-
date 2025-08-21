@@ -167,20 +167,41 @@ class plt_one_addpt_onclick:
             artist.remove()
         self.fig.canvas.draw()
 
+    # def resize_sq(self, bcid):
+    #     """ resizes the check box """
+    #     #future reference
+    #     #print(f"width  : {bcid.rectangles[0].get_width()}")
+    #     #print(f"height : {bcid.rectangles[0].get_height()}")
+    #     #print(f"xy     : {bcid.rectangles[0].get_xy()}")
+    #     #print(f"bb     : {bcid.rectangles[0].get_bbox()}")
+    #     #print(f"points : {bcid.rectangles[0].get_bbox().get_points()}")  #[[xmin,ymin],[xmax,ymax]]
+    #     h = bcid.patches[0].get_height()
+    #     bcid.patches[0].set_height(3*h)
+    #     ymax = bcid.patches[0].get_bbox().y1
+    #     ymin = bcid.patches[0].get_bbox().y0
+
+    #     bcid.lines[0][0].set_ydata([ymax,ymin])
+    #     bcid.lines[0][1].set_ydata([ymin,ymax])
+
+
+class plt_one_addpt_onclick:
+    ...
     def resize_sq(self, bcid):
-        """ resizes the check box """
-        #future reference
-        #print(f"width  : {bcid.rectangles[0].get_width()}")
-        #print(f"height : {bcid.rectangles[0].get_height()}")
-        #print(f"xy     : {bcid.rectangles[0].get_xy()}")
-        #print(f"bb     : {bcid.rectangles[0].get_bbox()}")
-        #print(f"points : {bcid.rectangles[0].get_bbox().get_points()}")  #[[xmin,ymin],[xmax,ymax]]
+        """resizes the check box"""
+        # pick the right attribute depending on matplotlib version
+        if hasattr(bcid, "patches") and len(bcid.patches) > 0:
+            rect = bcid.patches[0]      # Matplotlib >= 3.8
+        elif hasattr(bcid, "rectangles") and len(bcid.rectangles) > 0:
+            rect = bcid.rectangles[0]   # Matplotlib <= 3.7
+        else:
+            raise AttributeError("CheckButtons has no checkbox rectangles/patches")
 
-        h = bcid.rectangles[0].get_height()
-        bcid.rectangles[0].set_height(3*h)
+        h = rect.get_height()
+        rect.set_height(3 * h)
 
-        ymax = bcid.rectangles[0].get_bbox().y1
-        ymin = bcid.rectangles[0].get_bbox().y0
+        ymax = rect.get_bbox().y1
+        ymin = rect.get_bbox().y0
 
-        bcid.lines[0][0].set_ydata([ymax,ymin])
-        bcid.lines[0][1].set_ydata([ymin,ymax])
+        # update the check mark lines to match the resized box
+        bcid.lines[0][0].set_ydata([ymax, ymin])
+        bcid.lines[0][1].set_ydata([ymin, ymax])
